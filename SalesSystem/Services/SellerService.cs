@@ -24,5 +24,22 @@ namespace SalesSystem.Services
             _context.Add(seller);
             _context.SaveChanges();
         }
+
+        public Seller FindById(int sellerId)
+        {
+            return _context.Seller.FirstOrDefault(seller => seller.Id == sellerId);
+        }
+
+        public void Remove(Seller seller)
+        {
+            _context.Seller.Remove(seller);
+            _context.SaveChanges();
+        }
+
+        public void Remove(int sellerId)
+        {
+            Seller seller = _context.Seller.Find(sellerId);
+            Remove(seller);
+        }
     }
 }
