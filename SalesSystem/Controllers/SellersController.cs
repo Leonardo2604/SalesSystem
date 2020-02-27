@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using SalesSystem.Services;
+using SalesSystem.Services.Exceptions;
 using SalesSystem.Models;
 using SalesSystem.Models.ViewModels;
 
@@ -78,6 +79,53 @@ namespace SalesSystem.Controllers
             }
 
             return View(seller);
+        }
+
+        public IActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Seller seller = _sellerService.FindById(id.Value);
+            if (seller == null)
+            {
+                return NotFound();
+            }
+
+            SellerFormViewModel sellerFormViewModel = new SellerFormViewModel
+            {
+                Seller = seller,
+                Departments = _departmentService.FindAll()
+            };
+
+            return View(sellerFormViewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int? id, Seller seller)
+        {
+            if (id != seller.Id)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                _sellerService.Update(seller);
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound();
+            }
+            catch (DbConcurrencyException e)
+            {
+                return BadRequest();
+            }
+            
+            return RedirectToAction(nameof(Index));
         }
     }
 }
