@@ -35,8 +35,15 @@ namespace SalesSystem.Services
 
         public async Task RemoveAsync(Seller seller)
         {
-            _context.Seller.Remove(seller);
-            await _context.SaveChangesAsync();
+            try 
+            {
+                _context.Seller.Remove(seller);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                throw new IntegrityException(e.Message);
+            }  
         }
 
         public async Task RemoveAsync(int sellerId)
