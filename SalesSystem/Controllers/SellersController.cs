@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using SalesSystem.Services;
 using SalesSystem.Models;
+using SalesSystem.Models.ViewModels;
 
 namespace SalesSystem.Controllers
 {
     public class SellersController : Controller
     {
         private readonly SellerService _sellerService;
+        private readonly DepartmentService _departmentService;
 
-        public SellersController(SellerService sellerService)
+        public SellersController(SellerService sellerService, DepartmentService departmentService)
         {
             _sellerService = sellerService;
+            _departmentService = departmentService;
         }
 
         public IActionResult Index()
@@ -25,7 +25,11 @@ namespace SalesSystem.Controllers
 
         public IActionResult Create()
         {
-            return View();
+            SellerFormViewModel sellerFormViewModel = new SellerFormViewModel
+            {
+                Departments = _departmentService.FindAll()
+            };
+            return View(sellerFormViewModel);
         }
 
         [HttpPost]
